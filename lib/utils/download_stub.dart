@@ -1,6 +1,4 @@
-/// ===================================================================
-/// DOWNLOAD HELPER - Stub for non-web platforms (mobile/desktop)
-/// ===================================================================
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 

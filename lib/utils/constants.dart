@@ -1,6 +1,4 @@
-/// ===================================================================
-/// CONSTANTS - App-wide constants and theme configuration
-/// ===================================================================
+
 
 import 'package:flutter/material.dart';
 

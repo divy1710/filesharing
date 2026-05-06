@@ -1,9 +1,4 @@
-/// ===================================================================
-/// DOWNLOAD HELPER - Web implementation using dart:html
-/// ===================================================================
-/// Triggers actual browser file download using Blob + AnchorElement.
-/// This file is only loaded on web platform via conditional import.
-/// ===================================================================
+
 
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
