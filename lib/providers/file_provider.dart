@@ -169,6 +169,8 @@ class FileProvider extends ChangeNotifier {
           versionNumber: 1,
           description: 'Initial version',
           timestamp: now,
+          filePath: filePath,
+          fileSize: fileSize,
         ),
       ],
     );
@@ -201,6 +203,10 @@ class FileProvider extends ChangeNotifier {
   String? updateFile({
     required String fileId,
     required String newDescription,
+    String? filePath,
+    int? fileSize,
+    String? fileExt,
+    Uint8List? fileBytes,
   }) {
     if (newDescription.trim().isEmpty) {
       return 'Version description cannot be empty';
@@ -210,11 +216,36 @@ class FileProvider extends ChangeNotifier {
     if (file == null) return 'File not found';
 
     final now = DateTime.now();
+    
+    // Update main file properties if a new file was uploaded
+    if (filePath != null) file.filePath = filePath;
+    if (fileSize != null) file.fileSize = fileSize;
+    if (fileExt != null) {
+      final ext = fileExt.toUpperCase();
+      if (['JPG', 'JPEG', 'PNG', 'GIF'].contains(ext)) {
+        file.fileType = 'IMG';
+      } else if (ext == 'DOC' || ext == 'DOCX') {
+        file.fileType = 'DOCX';
+      } else if (ext == 'PPT' || ext == 'PPTX') {
+        file.fileType = 'PPTX';
+      } else if (ext == 'XLS' || ext == 'XLSX') {
+        file.fileType = 'XLSX';
+      } else {
+        file.fileType = 'OTHER';
+      }
+    }
+
+    if (fileBytes != null) {
+      storeFileBytes(fileId, fileBytes);
+    }
+
     final newVersion = FileVersion(
       id: _uuid.v4(),
       versionNumber: file.currentVersion + 1,
       description: newDescription.trim(),
       timestamp: now,
+      filePath: filePath ?? file.filePath,
+      fileSize: fileSize ?? file.fileSize,
     );
 
     file.versions.add(newVersion);

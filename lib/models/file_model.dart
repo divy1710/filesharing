@@ -14,12 +14,16 @@ class FileVersion {
   final int versionNumber; // e.g. 1, 2, 3...
   final String description; // What changed in this version
   final DateTime timestamp; // When this version was created
+  final String? filePath; // Path of the file for this version
+  final int? fileSize; // Size of the file for this version
 
   FileVersion({
     required this.id,
     required this.versionNumber,
     required this.description,
     required this.timestamp,
+    this.filePath,
+    this.fileSize,
   });
 
   /// Convert FileVersion to JSON for local storage
@@ -28,6 +32,8 @@ class FileVersion {
         'versionNumber': versionNumber,
         'description': description,
         'timestamp': timestamp.toIso8601String(),
+        'filePath': filePath,
+        'fileSize': fileSize,
       };
 
   /// Create FileVersion from JSON (when loading from storage)
@@ -36,6 +42,8 @@ class FileVersion {
         versionNumber: json['versionNumber'],
         description: json['description'],
         timestamp: DateTime.parse(json['timestamp']),
+        filePath: json['filePath'],
+        fileSize: json['fileSize'],
       );
 }
 
@@ -150,3 +158,4 @@ class FileItem {
   factory FileItem.fromJsonString(String jsonStr) =>
       FileItem.fromJson(jsonDecode(jsonStr));
 }
+

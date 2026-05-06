@@ -1,6 +1,9 @@
 /// ===================================================================
 /// FILE DETAIL SCREEN - Shows versions + comments for a file
 /// ===================================================================
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/file_provider.dart';
@@ -23,6 +26,13 @@ class _FileDetailScreenState extends State<FileDetailScreen>
   final _commentTextController = TextEditingController();
   final _commentAuthorController = TextEditingController();
 
+  // State variables for picking a new file for the version
+  String? _pickedFileName;
+  String? _pickedFilePath;
+  int? _pickedFileSize;
+  String? _pickedFileExt;
+  Uint8List? _pickedFileBytes;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +46,33 @@ class _FileDetailScreenState extends State<FileDetailScreen>
     _commentTextController.dispose();
     _commentAuthorController.dispose();
     super.dispose();
+  }
+
+  /// Open file picker to select a new version file
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(withData: true);
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        String? safePath;
+        if (!kIsWeb) {
+          safePath = file.path;
+        }
+        setState(() {
+          _pickedFileName = file.name;
+          _pickedFilePath = safePath ?? file.name;
+          _pickedFileSize = file.size;
+          _pickedFileExt = file.extension;
+          _pickedFileBytes = file.bytes;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open file picker: $e'), backgroundColor: AppColors.warning),
+        );
+      }
+    }
   }
 
   @override
@@ -201,15 +238,71 @@ class _FileDetailScreenState extends State<FileDetailScreen>
             ),
           ),
           const SizedBox(height: 10),
+          // Option to upload an updated file
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _pickedFileName ?? 'No new file selected (metadata update only)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: _pickedFileName != null ? AppColors.textPrimary : AppColors.textHint,
+                    fontStyle: _pickedFileName == null ? FontStyle.italic : FontStyle.normal,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (_pickedFileName != null)
+                IconButton(
+                  icon: const Icon(Icons.clear, size: 18),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    setState(() {
+                      _pickedFileName = null;
+                      _pickedFilePath = null;
+                      _pickedFileSize = null;
+                      _pickedFileExt = null;
+                      _pickedFileBytes = null;
+                    });
+                  },
+                ),
+              TextButton.icon(
+                onPressed: _pickFile,
+                icon: const Icon(Icons.upload_file, size: 18),
+                label: const Text('Pick File'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                final error = provider.updateFile(fileId: file.id, newDescription: _versionDescController.text);
+                final error = provider.updateFile(
+                  fileId: file.id,
+                  newDescription: _versionDescController.text,
+                  filePath: _pickedFilePath,
+                  fileSize: _pickedFileSize,
+                  fileExt: _pickedFileExt,
+                  fileBytes: _pickedFileBytes,
+                );
                 if (error != null) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: AppColors.error));
                 } else {
                   _versionDescController.clear();
+                  setState(() {
+                    _pickedFileName = null;
+                    _pickedFilePath = null;
+                    _pickedFileSize = null;
+                    _pickedFileExt = null;
+                    _pickedFileBytes = null;
+                  });
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('New version created! ✓'), backgroundColor: AppColors.success),
                   );
@@ -255,7 +348,15 @@ class _FileDetailScreenState extends State<FileDetailScreen>
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(version.description, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                         const SizedBox(height: 4),
-                        Text(formatDateTime(version.timestamp), style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                        Row(
+                          children: [
+                            Text(formatDateTime(version.timestamp),
+                                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                            if (version.fileSize != null)
+                              Text(' • Updated (${_formatFileSize(version.fileSize!)})',
+                                  style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w500)),
+                          ],
+                        ),
                       ])),
                       if (isLatest) Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -387,5 +488,10 @@ class _FileDetailScreenState extends State<FileDetailScreen>
         ],
       ),
     );
+  }
+  String _formatFileSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }
