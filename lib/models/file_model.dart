@@ -1,9 +1,4 @@
-/// ===================================================================
-/// FILE MODEL - Represents a file in the Smart File Share app
-/// ===================================================================
-/// This model holds all metadata about a file including its name,
-/// type, description, sharing status, versions, and comments.
-/// ===================================================================
+
 
 import 'dart:convert';
 

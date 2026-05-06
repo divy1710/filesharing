@@ -1,10 +1,4 @@
-/// ===================================================================
-/// FILE PROVIDER - Central state management using Provider + Hive
-/// ===================================================================
-/// This provider manages all file operations: CRUD, versioning,
-/// commenting, sharing, search/filter, offline storage (Hive), and
-/// conflict resolution. Uses ChangeNotifier to update the UI.
-/// ===================================================================
+
 
 import 'dart:convert';
 import 'dart:typed_data';

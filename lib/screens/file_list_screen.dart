@@ -1,10 +1,4 @@
-/// ===================================================================
-/// FILE LIST SCREEN - Main screen showing all uploaded files
-/// ===================================================================
-/// This is the home screen of the app. It displays all files with
-/// search, filter, sync status, and navigation to other screens.
-/// Uses a Stateful widget to manage local UI state (search bar toggle).
-/// ===================================================================
+
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

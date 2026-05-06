@@ -1,9 +1,4 @@
-/// ===================================================================
-/// MAIN.DART - Entry point of the Smart File Share application
-/// ===================================================================
-/// Initializes Hive, sets up Providers (Auth + File), checks session,
-/// and routes to Login or Home screen based on auth state.
-/// ===================================================================
+
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

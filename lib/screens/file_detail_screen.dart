@@ -1,6 +1,4 @@
-/// ===================================================================
-/// FILE DETAIL SCREEN - Shows versions + comments for a file
-/// ===================================================================
+
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_picker/file_picker.dart';

@@ -1,6 +1,4 @@
-/// ===================================================================
-/// SEARCH & FILTER SCREEN - Advanced search and filtering
-/// ===================================================================
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/file_provider.dart';

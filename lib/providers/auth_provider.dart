@@ -1,9 +1,4 @@
-/// ===================================================================
-/// AUTH PROVIDER - Manages user authentication state with Hive
-/// ===================================================================
-/// Handles signup, login, logout, and session persistence.
-/// Uses Hive as the local database for storing user accounts.
-/// ===================================================================
+
 
 import 'dart:convert';
 import 'package:flutter/material.dart';

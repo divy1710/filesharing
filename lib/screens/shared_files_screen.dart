@@ -1,6 +1,4 @@
-/// ===================================================================
-/// SHARED FILES SCREEN - Shows only shared files
-/// ===================================================================
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/file_provider.dart';

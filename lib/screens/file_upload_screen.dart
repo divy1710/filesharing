@@ -1,6 +1,4 @@
-/// ===================================================================
-/// FILE UPLOAD SCREEN - Form to add a new file with optional file picker
-/// ===================================================================
+
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
