@@ -9,6 +9,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/file_provider.dart';
+import '../providers/auth_provider.dart';
 import '../utils/constants.dart';
 import '../utils/helpers.dart';
 import '../widgets/file_card.dart';
@@ -17,6 +18,7 @@ import 'file_upload_screen.dart';
 import 'file_detail_screen.dart';
 import 'shared_files_screen.dart';
 import 'search_filter_screen.dart';
+import 'login_screen.dart';
 
 /// FileListScreen - Stateful because we toggle the search bar visibility
 class FileListScreen extends StatefulWidget {
@@ -122,6 +124,37 @@ class _FileListScreenState extends State<FileListScreen>
                   );
                 },
                 tooltip: 'Shared files',
+              ),
+              // Logout button
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Logout?'),
+                      content: const Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Provider.of<AuthProvider>(context, listen: false).logout();
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LoginScreen()),
+                              (_) => false,
+                            );
+                          },
+                          child: const Text('Logout', style: TextStyle(color: AppColors.error)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                tooltip: 'Logout',
               ),
             ],
           ),

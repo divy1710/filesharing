@@ -1,6 +1,7 @@
 /// ===================================================================
 /// FILE UPLOAD SCREEN - Form to add a new file with optional file picker
 /// ===================================================================
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   String? _pickedFilePath;
   int? _pickedFileSize;
   String? _pickedFileExt;
+  Uint8List? _pickedFileBytes; // Actual file bytes for download
 
   @override
   void dispose() {
@@ -52,6 +54,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           _pickedFilePath = safePath ?? file.name;
           _pickedFileSize = file.size;
           _pickedFileExt = file.extension;
+          _pickedFileBytes = file.bytes; // Store bytes for download
           // Auto-fill the file name from the picked file
           if (_fileNameController.text.isEmpty) {
             _fileNameController.text = file.name.split('.').first;
@@ -105,6 +108,15 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
       filePath: _pickedFilePath,
       fileSize: _pickedFileSize,
     );
+
+    if (error == null && _pickedFileBytes != null) {
+      // Store bytes in provider so file can be downloaded later
+      // Find the file we just added by name
+      final addedFile = provider.allFiles.lastWhere(
+        (f) => f.fileName == _fileNameController.text.trim(),
+      );
+      provider.storeFileBytes(addedFile.id, _pickedFileBytes!);
+    }
 
     if (error != null) {
       // Show error

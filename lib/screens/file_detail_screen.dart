@@ -7,6 +7,7 @@ import '../providers/file_provider.dart';
 import '../models/file_model.dart';
 import '../utils/constants.dart';
 import '../utils/helpers.dart';
+import '../utils/download_helper.dart';
 
 class FileDetailScreen extends StatefulWidget {
   final String fileId;
@@ -53,6 +54,25 @@ class _FileDetailScreenState extends State<FileDetailScreen>
           title: Text(file.fileName, style: const TextStyle(fontWeight: FontWeight.bold)),
           elevation: 0, backgroundColor: AppColors.primary, foregroundColor: Colors.white,
           actions: [
+            // Download file
+            IconButton(
+              icon: const Icon(Icons.download),
+              onPressed: () {
+                final bytes = provider.getFileBytes(file.id);
+                if (bytes != null) {
+                  // Extension from file type
+                  final ext = file.fileType.toLowerCase();
+                  final downloadName = '${file.fileName}.$ext';
+                  downloadFileBytes(bytes, downloadName, context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('No file data available. Pick a file first when uploading.'),
+                    backgroundColor: AppColors.warning,
+                  ));
+                }
+              },
+              tooltip: 'Download file',
+            ),
             // Share/unshare toggle
             IconButton(
               icon: Icon(file.isShared ? Icons.people : Icons.person_add),

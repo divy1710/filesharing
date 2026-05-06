@@ -7,6 +7,7 @@
 /// ===================================================================
 
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -21,8 +22,29 @@ class FileProvider extends ChangeNotifier {
   String _filterCategory = 'All'; // Personal / Shared / All
   final Uuid _uuid = const Uuid(); // For generating unique IDs
 
+  // In-memory storage for file bytes (used for download)
+  // Key = fileId, Value = file bytes
+  final Map<String, Uint8List> _fileBytes = {};
+
   // Hive box for persistent local storage
   static const String _boxName = 'files_box';
+
+  // ---- File Bytes Methods ----
+
+  /// Store file bytes for a given file ID
+  void storeFileBytes(String fileId, Uint8List bytes) {
+    _fileBytes[fileId] = bytes;
+  }
+
+  /// Get file bytes for a given file ID (null if not available)
+  Uint8List? getFileBytes(String fileId) {
+    return _fileBytes[fileId];
+  }
+
+  /// Check if bytes are available for download
+  bool hasFileBytes(String fileId) {
+    return _fileBytes.containsKey(fileId);
+  }
 
   // ---- Getters ----
 
